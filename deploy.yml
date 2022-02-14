@@ -1,0 +1,39 @@
+---
+- name: Installation of Apache using docker
+  hosts: prod
+  become: yes
+  vars_files:
+    - files/secrets/credentials.yaml
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  pre_tasks:
+    - name: Install some package
+      package: name= "{{item}}" state=present
+      loop:
+        - epel-release
+        - git
+        - wget
+      when: ansible_distribution == "CentOs"
+    - name: Install python-pip
+      yum: name=python-pip state=present update_cache=yes
+    - name: install docker for python
+      pip: name=docker state=present
+  
+  tasks:
+    - name: Add the jinja file
+      template:
+        src: "index.html.j2"
+        dest: /home/centos/index.html
+
+    - name: Install apache
+      community.docker.docker_container:
+        name: app
+        image: httpd
+        ports:
+          - "80:80"
+        volumes:
+          - /home/centos/index.html:/usr/local/apache2/htdocs/index.html
+      
+      
+...

@@ -1,0 +1,4 @@
+---
+ansible_user: centos
+ansible_password: "{{ vault_ansible_password }}"
+...
