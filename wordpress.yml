@@ -1,0 +1,16 @@
+---
+- name: Install Wordpress using roles
+  hosts: prod
+  become: yes
+  vars:
+    system_user: centos
+  vars_files:
+    - files/secrets/credentials.yaml
+  pre_tasks:
+    - name: define variable wwww-data
+      user:
+        name: www-data
+        state: present  
+  roles:
+    - { role: ansible-role-containerized-wordpress }
+  
